@@ -1,0 +1,17 @@
+{
+  "name": "u2f-node-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "consolidate": "^0.13.1",
+    "express": "^4.13.3",
+    "u2f": "^0.1.1"
+  }
+}
