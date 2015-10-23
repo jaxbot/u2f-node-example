@@ -14,6 +14,7 @@ app.use(require('cookie-parser')());
 app.engine('html', engines.hogan);
 
 var Sessions = {};
+var Users = {};
 
 app.get('/', function(req, res) {
   if (!req.cookies.userid) {
@@ -32,10 +33,31 @@ app.get('/api/register_token', function(req, res) {
   Sessions[req.cookies.userid] = { authRequest: authRequest };
   res.send(JSON.stringify(authRequest));
 });
+app.get('/api/sign_token', function(req, res) {
+  var authRequest = u2f.request(APP_ID, Users[req.cookies.userid].keyHandle);
+  Sessions[req.cookies.userid] = { authRequest: authRequest };
+  res.send(JSON.stringify(authRequest));
+});
 app.post('/api/register', function(req, res) {
   console.log(req.body);
   var checkRes = u2f.checkRegistration(Sessions[req.cookies.userid].authRequest, req.body);
   console.log(checkRes);
+  if (checkRes.successful) {
+    Users[req.cookies.userid] = { publicKey: checkRes.publicKey, keyHandle: checkRes.keyHandle };
+    res.send(true);
+  } else {
+    res.send(checkRes.errorMessage);
+  }
+});
+app.post('/api/authenticate', function(req, res) {
+  console.log(req.body);
+  var checkRes = u2f.checkSignature(Sessions[req.cookies.userid].authRequest, req.body, Users[req.cookies.userid].publicKey);
+  console.log(checkRes);
+  if (checkRes.successful) {
+    res.send("The secret data is: " + Math.random());
+  } else {
+    res.send(checkRes.errorMessage);
+  }
 });
 
 app.listen(5000);
