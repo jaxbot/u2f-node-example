@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<script src="https://demo.yubico.com/js/u2f-api.js"></script>
+</head>
+<body>
+<h1>BestYoga</h1>
+
+<p>Stuff</p>
+<script>
+function ajaxGet(url, cb) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", url);
+	xhr.onload = function() {
+		cb(xhr.responseText);
+	};
+	xhr.send();
+}
+function ajaxPost(url, data) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", url);
+	xhr.setRequestHeader("Content-type", "application/json");
+	xhr.send(JSON.stringify(data));
+}
+ajaxGet("/api/register_token", function(authRequest) {
+		var req = JSON.parse(authRequest);
+		console.log(req);
+		u2f.register([req], [], function(res) {
+			console.log(res);
+			ajaxPost("/api/register", res);
+		});
+});
+</script>
+</body>
+</html>
